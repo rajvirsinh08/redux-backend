@@ -8,7 +8,14 @@ const cors = require("cors");
 const path = require('path');
 app.use('/uploads', express.static('uploads'));
 
-app.use(cors());
+// app.use(cors());
+app.use(
+    cors({
+      origin: "*",
+      methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
+      credentials: true,
+    })
+  );
 const userRoute = require("./Routes/userRoutes");
 
 
