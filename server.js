@@ -11,11 +11,11 @@ app.use('/uploads', express.static('uploads'));
 // app.use(cors());
 app.use(
     cors({
-      origin: "*",
-      methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
-      credentials: true,
+        origin: "*",
+        methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
+        credentials: true,
     })
-  );
+);
 const userRoute = require("./Routes/userRoutes");
 
 
@@ -35,6 +35,14 @@ mongoose
         console.log("error", error);
     });
 
-
+// Simple message endpoint
+app.get("/", (res) => {
+    res.status(200).send("Welcome to my simple Node.js app!");
+});
+// Global error handler
+app.use((err, res) => {
+    console.error(err.stack);
+    res.status(500).send("Somethxing broke!");
+});
 
 app.use(userRoute);
