@@ -1,48 +1,36 @@
 const express = require("express");
-
-const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-dotenv.config();
 const cors = require("cors");
-const path = require('path');
-app.use('/uploads', express.static('uploads'));
-
-// app.use(cors());
-app.use(
-    cors({
-        origin: "*",
-        methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
-        credentials: true,
-    })
-);
 const userRoute = require("./Routes/userRoutes");
 
-
+dotenv.config();
+const app = express();
 
 app.use(express.json());
+app.use(cors({
+    origin: "*",
+    methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
+    credentials: true,
+}));
+app.use('/uploads', express.static('uploads'));
+app.use(userRoute);
 
-mongoose
-    .connect(process.env.URI)
+mongoose.connect(process.env.URI)
     .then(() => {
-        console.log("connected successfully");
+        console.log("Connected to MongoDB");
 
-        app.listen(process.env.PORT || 8000, (err) => {
-            if (err) console.log(err);
-            console.log("running succesfully at", process.env.PORT);
+        app.listen(process.env.PORT || 8000, () => {
+            console.log(`Server running on port ${process.env.PORT || 8000}`);
         });
-    }).catch((error) => {
-        console.log("error", error);
+    })
+    .catch(error => {
+        console.error("Error connecting to MongoDB:", error);
     });
 
-// Simple message endpoint
-app.get("/", (res) => {
-    res.status(200).send("Welcome to my simple Node.js app!");
-});
-// Global error handler
-app.use((err, res) => {
-    console.error(err.stack);
-    res.status(500).send("Somethxing broke!");
+server.get('/', (req, res) => {
+    res.send('Hello from Express on Vercel!');
 });
 
-app.use(userRoute);
+
+module.exports = app; // Export the Express app instance
