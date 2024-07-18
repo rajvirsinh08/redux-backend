@@ -142,5 +142,4 @@ router.patch("/:id", upload.single('image'), async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 });
-
 module.exports = router;
