@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-// const multer = require('multer');
+const multer = require('multer');
 const User = require("../models/userModel");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
@@ -11,45 +11,21 @@ const { StatusCodes, MESSAGES } = require('../constants');
 const authenticateToken = require('../Middleware/authantication');
 dotenv.config();
 
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, 'uploads/'); // Specify the destination directory
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, Date.now() + '-' + file.originalname); // Specify the file name
-//     }
-// });
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/'); // Specify the destination directory
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname); // Specify the file name
+    }
+});
 
-// const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 
 // POST route to create a new user
-// router.post('/', upload.single('image'), async (req, res) => {
-//     const { name, email, password } = req.body;
-//     const image = req.file ? req.file.originalname : null;
-//     console.log(req.file)
-
-//     try {
-//         const existingUser = await User.findOne({ email: email });
-//         if (existingUser) {
-//             return res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
-//         }
-//         const userAdded = await User.create({
-//             name: name,
-//             email: email,
-//             password: password,
-//             image: `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`,
-//         });
-
-
-//         res.status(StatusCodes.CREATED).json({ userAdded });
-//     } catch (error) {
-//         console.log(error);
-//         res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-//     }
-// });
-// add user
-router.post('/api/post', async (req, res) => {
+router.post('/', upload.single('image'), async (req, res) => {
     const { name, email, password } = req.body;
+    const image = req.file ? req.file.originalname : null;
     console.log(req.file)
 
     try {
@@ -61,6 +37,7 @@ router.post('/api/post', async (req, res) => {
             name: name,
             email: email,
             password: password,
+            image: `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`,
         });
 
 
@@ -70,8 +47,8 @@ router.post('/api/post', async (req, res) => {
         res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
     }
 });
-// login user
-router.post('/api/login', async (req, res) => {
+// POST route for user sign-in
+router.post('/signin', async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -99,9 +76,8 @@ router.post('/api/login', async (req, res) => {
     }
 });
 router.use(authenticateToken);
-
 // GET route to get all users
-router.get("/api/get", async (req, res) => {
+router.get("/get", async (req, res) => {
     try {
         const showAll = await User.find();
         res.status(StatusCodes.OK).json(showAll);
@@ -124,50 +100,19 @@ router.get("/:id", async (req, res) => {
 });
 
 // DELETE route to delete a user by ID
-router.delete("/api/delete/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const singleUser = await User.findByIdAndDelete({ _id: id });
         res.status(StatusCodes.OK).json(singleUser);
     } catch (error) {
         console.log(error);
-        res.status(StatusCodes.INTERVAL_SERVER_ERROR).json({ error: error.message });
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 });
 
 // PATCH route to update a user by ID, including handling image updates
-// router.patch("/:id", upload.single('image'), async (req, res) => {
-//     const { id } = req.params;
-//     const { email, ...updateData } = req.body;
-
-//     try {
-//         if (email) {
-//             const existingUser = await User.findOne({ email: email });
-//             if (existingUser && existingUser._id.toString() !== id) {
-//                 return res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
-//             }
-//             updateData.email = email;
-//         }
-
-//         if (req.file) {
-//             const imagePath = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
-//             updateData.image = imagePath;
-//         }
-
-//         const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
-
-//         if (!updatedUser) {
-//             return res.status(StatusCodes.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
-//         }
-
-//         return res.status(StatusCodes.OK).json(updatedUser);
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(StatusCodes.INTERVAL_SERVER_ERROR).json({ error: error.message });
-//     }
-// });
-// update user
-router.patch("/api/update/:id", async (req, res) => {
+router.patch("/:id", upload.single('image'), async (req, res) => {
     const { id } = req.params;
     const { email, ...updateData } = req.body;
 
@@ -180,10 +125,10 @@ router.patch("/api/update/:id", async (req, res) => {
             updateData.email = email;
         }
 
-        // if (req.file) {
-        //     const imagePath = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
-        //     updateData.image = imagePath;
-        // }
+        if (req.file) {
+            const imagePath = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
+            updateData.image = imagePath;
+        }
 
         const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
 
@@ -194,7 +139,8 @@ router.patch("/api/update/:id", async (req, res) => {
         return res.status(StatusCodes.OK).json(updatedUser);
     } catch (error) {
         console.log(error);
-        return res.status(StatusCodes.INTERVAL_SERVER_ERROR).json({ error: error.message });
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 });
+
 module.exports = router;
