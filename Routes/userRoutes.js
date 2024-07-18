@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -108,7 +107,7 @@ router.delete("/:id", async (req, res) => {
         res.status(StatusCodes.OK).json(singleUser);
     } catch (error) {
         console.log(error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        res.status(StatusCodes.INTERVAL_SERVER_ERROR).json({ error: error.message });
     }
 });
 
@@ -140,7 +139,8 @@ router.patch("/:id", upload.single('image'), async (req, res) => {
         return res.status(StatusCodes.OK).json(updatedUser);
     } catch (error) {
         console.log(error);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        return res.status(StatusCodes.INTERVAL_SERVER_ERROR).json({ error: error.message });
     }
 });
+
 module.exports = router;

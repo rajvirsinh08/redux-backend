@@ -1,4 +1,3 @@
-// authentication.js
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const { StatusCodes } = require('../constants');
@@ -10,7 +9,7 @@ const authenticateToken = (req, res, next) => {
 
   if (!token) {
     return res.status(StatusCodes.UNAUTHORIZED).json({ message: 'Access denied. No token provided.' });
-    
+
   }
 
   try {
