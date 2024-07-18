@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+// const multer = require('multer');
 const User = require("../models/userModel");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
@@ -47,7 +47,8 @@ dotenv.config();
 //         res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
 //     }
 // });
-router.post('/',  async (req, res) => {
+// add user
+router.post('/api/post', async (req, res) => {
     const { name, email, password } = req.body;
     console.log(req.file)
 
@@ -69,8 +70,8 @@ router.post('/',  async (req, res) => {
         res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
     }
 });
-// POST route for user sign-in
-router.post('/signin', async (req, res) => {
+// login user
+router.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -98,8 +99,9 @@ router.post('/signin', async (req, res) => {
     }
 });
 router.use(authenticateToken);
+
 // GET route to get all users
-router.get("/get", async (req, res) => {
+router.get("/api/get", async (req, res) => {
     try {
         const showAll = await User.find();
         res.status(StatusCodes.OK).json(showAll);
@@ -122,7 +124,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // DELETE route to delete a user by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/api/delete/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const singleUser = await User.findByIdAndDelete({ _id: id });
@@ -164,7 +166,8 @@ router.delete("/:id", async (req, res) => {
 //         return res.status(StatusCodes.INTERVAL_SERVER_ERROR).json({ error: error.message });
 //     }
 // });
-router.patch("/:id", async (req, res) => {
+// update user
+router.patch("/api/update/:id", async (req, res) => {
     const { id } = req.params;
     const { email, ...updateData } = req.body;
 
