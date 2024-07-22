@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(cors({
     origin: "*",
     methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 }));
 app.use('/uploads', express.static('uploads'));
