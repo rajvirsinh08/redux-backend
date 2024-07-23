@@ -22,7 +22,7 @@ dotenv.config();
 // const upload = multer({ storage: storage });
 
 // POST route to create a new user
-router.post("/nm", async (req, res) => {
+router.post("/post", async (req, res) => {
     const { name, email, password } = req.body;
     // const image = req.file ? req.file.originalname : null;
 
