@@ -86,7 +86,7 @@ router.get("/get", async (req, res) => {
 });
 
 // GET route to get a single user by ID
-router.get("/:id", async (req, res) => {
+router.get("/get/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const singleUser = await User.findById(id);
@@ -101,7 +101,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // DELETE route to delete a user by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/delete/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const singleUser = await User.findByIdAndDelete(id);
@@ -116,7 +116,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 // PATCH route to update a user by ID, including handling image updates
-router.patch("/:id", upload.single('image'), async (req, res) => {
+router.patch("/update/:id", upload.single('image'), async (req, res) => {
     console.log('req.body:', req.body);
     console.log('req.file:', req.file);
 

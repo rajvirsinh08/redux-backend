@@ -90,6 +90,10 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
 });
 
+app.get("/", (req, res) => {
+    res.status(200).send("Welcome to my simple Node.js app!");
+});
+
 // CORS middleware
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'https://redux-backend.vercel.app');
