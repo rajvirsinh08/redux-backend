@@ -4,8 +4,7 @@ const multer = require('multer');
 const User = require("../models/userModel");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const nodemailer = require('nodemailer');
+
 const { StatusCodes, MESSAGES } = require('../constants');
 const authenticateToken = require('../Middleware/authantication');
 
