@@ -72,7 +72,7 @@ router.post('/signin', async (req, res) => {
     }
 });
 
-router.use(authenticateToken);
+// router.use(authenticateToken);
 
 // GET route to get all users
 router.get("/get", async (req, res) => {
