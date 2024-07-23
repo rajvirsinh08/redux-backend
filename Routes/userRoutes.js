@@ -1,35 +1,37 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const multer = require('multer');
+// const multer = require('multer');
 const User = require("../models/userModel");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 
-const { StatusCodes, MESSAGES } = require('../constants');
-const authenticateToken = require('../Middleware/authantication');
+const { StatusCodes, MESSAGES } = require("../constants");
+const authenticateToken = require("../Middleware/authantication");
 
 dotenv.config();
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Specify the destination directory
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname); // Specify the file name
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'uploads/'); // Specify the destination directory
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, Date.now() + '-' + file.originalname); // Specify the file name
+//     }
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 // POST route to create a new user
-router.post('/nm', upload.single('image'), async (req, res) => {
+router.post("/nm", async (req, res) => {
     const { name, email, password } = req.body;
-    const image = req.file ? req.file.originalname : null;
+    // const image = req.file ? req.file.originalname : null;
 
     try {
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
         }
 
         // const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,13 +39,15 @@ router.post('/nm', upload.single('image'), async (req, res) => {
             name: name,
             email: email,
             password: password,
-            image: `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`,
+            // image: `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`,
         });
 
         res.status(StatusCodes.CREATED).json({ userAdded });
     } catch (error) {
         console.error("Error creating user:", error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: error.message });
     }
 });
 
@@ -69,13 +73,13 @@ router.post('/nm', upload.single('image'), async (req, res) => {
 //         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
 //     }
 // });
-router.post('/signin', async (req, res) => {
+router.post("/signin", async (req, res) => {
     const { email, password } = req.body;
 
     try {
         // Find user by email
         const user = await User.findOne({ email: email });
-        
+
         // Directly compare plain text passwords (not secure for production)
         if (user && password === user.password) {
             const jwtToken = jwt.sign(
@@ -83,14 +87,18 @@ router.post('/signin', async (req, res) => {
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: "1m" }
             );
-            console.log('Generated JWT Token:', jwtToken);
+            console.log("Generated JWT Token:", jwtToken);
             res.status(StatusCodes.OK).json({ user, jwtToken });
         } else {
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.INVALID_CREDENTIALS });
+            return res
+                .status(StatusCodes.BAD_REQUEST)
+                .json({ message: MESSAGES.INVALID_CREDENTIALS });
         }
     } catch (error) {
         console.error("Error signing in user:", error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: error.message });
     }
 });
 
@@ -103,7 +111,9 @@ router.get("/get", async (req, res) => {
         res.status(StatusCodes.OK).json(showAll);
     } catch (error) {
         console.error("Error fetching users:", error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: error.message });
     }
 });
 
@@ -113,12 +123,16 @@ router.get("/:id", async (req, res) => {
     try {
         const singleUser = await User.findById(id);
         if (!singleUser) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .json({ message: MESSAGES.USER_NOT_FOUND });
         }
         res.status(StatusCodes.OK).json(singleUser);
     } catch (error) {
         console.error("Error fetching user:", error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: error.message });
     }
 });
 
@@ -128,17 +142,21 @@ router.delete("/:id", async (req, res) => {
     try {
         const singleUser = await User.findByIdAndDelete(id);
         if (!singleUser) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .json({ message: MESSAGES.USER_NOT_FOUND });
         }
         res.status(StatusCodes.OK).json(singleUser);
     } catch (error) {
         console.error("Error deleting user:", error);
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: error.message });
     }
 });
 
 // PATCH route to update a user by ID, including handling image updates
-router.patch("/:id", upload.single('image'), async (req, res) => {
+router.patch("/:id", async (req, res) => {
     const { id } = req.params;
     const { email, ...updateData } = req.body;
 
@@ -146,26 +164,34 @@ router.patch("/:id", upload.single('image'), async (req, res) => {
         if (email) {
             const existingUser = await User.findOne({ email: email });
             if (existingUser && existingUser._id.toString() !== id) {
-                return res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
+                return res
+                    .status(StatusCodes.BAD_REQUEST)
+                    .json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
             }
             updateData.email = email;
         }
 
-        if (req.file) {
-            const imagePath = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
-            updateData.image = imagePath;
-        }
+        // if (req.file) {
+        //     const imagePath = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
+        //     updateData.image = imagePath;
+        // }
 
-        const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
+        const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+            new: true,
+        });
 
         if (!updatedUser) {
-            return res.status(StatusCodes.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
+            return res
+                .status(StatusCodes.NOT_FOUND)
+                .json({ message: MESSAGES.USER_NOT_FOUND });
         }
 
         return res.status(StatusCodes.OK).json(updatedUser);
     } catch (error) {
         console.error("Error updating user:", error);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+        return res
+            .status(StatusCodes.INTERNAL_SERVER_ERROR)
+            .json({ error: error.message });
     }
 });
 
