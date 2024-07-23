@@ -23,7 +23,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // POST route to create a new user
-router.post('/', upload.single('image'), async (req, res) => {
+router.post('/nm', upload.single('image'), async (req, res) => {
     const { name, email, password } = req.body;
     const image = req.file ? req.file.originalname : null;
 
@@ -33,11 +33,11 @@ router.post('/', upload.single('image'), async (req, res) => {
             return res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // const hashedPassword = await bcrypt.hash(password, 10);
         const userAdded = await User.create({
             name: name,
             email: email,
-            password: hashedPassword,
+            password: password,
             image: `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`,
         });
 
@@ -49,12 +49,36 @@ router.post('/', upload.single('image'), async (req, res) => {
 });
 
 // POST route for user sign-in
+// router.post('/signin', async (req, res) => {
+//     const { email, password } = req.body;
+
+//     try {
+//         const user = await User.findOne({ email: email });
+//         if (user && await bcrypt.compare(password, user.password)) {
+//             const jwtToken = jwt.sign(
+//                 { userId: user._id },
+//                 process.env.JWT_SECRET_KEY,
+//                 { expiresIn: "1m" }
+//             );
+//             console.log('Generated JWT Token:', jwtToken);
+//             res.status(StatusCodes.OK).json({ user, jwtToken });
+//         } else {
+//             return res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.INVALID_CREDENTIALS });
+//         }
+//     } catch (error) {
+//         console.error("Error signing in user:", error);
+//         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+//     }
+// });
 router.post('/signin', async (req, res) => {
     const { email, password } = req.body;
 
     try {
+        // Find user by email
         const user = await User.findOne({ email: email });
-        if (user && await bcrypt.compare(password, user.password)) {
+        
+        // Directly compare plain text passwords (not secure for production)
+        if (user && password === user.password) {
             const jwtToken = jwt.sign(
                 { userId: user._id },
                 process.env.JWT_SECRET_KEY,

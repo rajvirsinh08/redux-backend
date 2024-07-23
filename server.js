@@ -30,10 +30,22 @@ mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: t
         console.error("Error connecting to MongoDB:", error);
     });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
 
+// Error handling middleware
+// app.use((err, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).send('Something broke!');
+// });
+app.use(cors(), function (req, res, next) {
+    console.log(req);
+    res.header(
+        'Access-Control-Allow-Origin',
+        'https://redux-backend.vercel.app/'
+    );
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    );
+    next();
+});
 module.exports = app;
