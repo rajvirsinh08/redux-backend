@@ -81,7 +81,7 @@ mongoose.connect(process.env.URI)
     .then(() => {
         console.log("Connected to MongoDB");
         isConnected = true;
-
+        
         app.listen(process.env.PORT || 8000, () => {
             console.log(`Server running on port ${process.env.PORT || 8000}`);
         });
@@ -96,9 +96,9 @@ mongoose.connect(process.env.URI)
 //     res.status(500).send('Something broke!');
 // });
 
-app.get("/", (req, res) => {
-    res.status(200).send("Welcome to my simple Node.js app!");
-});
+// app.get("/", (req, res) => {
+//     res.status(200).send("Welcome to my simple Node.js app!");
+// });
 
 // CORS middleware
 app.use((req, res, next) => {

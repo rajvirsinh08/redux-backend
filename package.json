@@ -10,7 +10,8 @@
     "dev": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "build": "webpack --config=Scripts/config/webpack.prod.js"
     },
   
   "author": "",
@@ -26,6 +27,7 @@
     "nodemailer": "^6.9.13"
   },
   "devDependencies": {
-    "nodemon": "^3.1.3"
+    "nodemon": "^3.1.3",
+     "webpack": "^3.8.1"
   }
 }
