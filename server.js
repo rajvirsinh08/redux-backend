@@ -60,12 +60,18 @@ dotenv.config();
 const app = express();
 
 app.use(express.json());
-app.use(cors({
-    origin: "*",
-    methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-}));
+app.use(cors(), function (req, res, next) {
+    console.log(req);
+    res.header(
+        'Access-Control-Allow-Origin',
+        'https://redux-frontend-fawn.vercel.app/'
+    );
+    res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+    );
+    next();
+});
 app.use('/uploads', express.static('uploads'));
 app.use(userRoute);
 
@@ -96,7 +102,7 @@ app.get("/", (req, res) => {
 
 // CORS middleware
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://redux-backend.vercel.app');
+    res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     next();
 });
