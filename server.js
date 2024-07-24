@@ -64,7 +64,7 @@ app.use(cors(), function (req, res, next) {
     console.log(req);
     res.header(
         'Access-Control-Allow-Origin',
-        'https://redux-frontend-fawn.vercel.app/'
+        '*'
     );
     res.header(
         'Access-Control-Allow-Headers',
@@ -90,11 +90,11 @@ mongoose.connect(process.env.URI)
         console.error("Error connecting to MongoDB:", error);
     });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
+// Error handling middleware    
+// app.use((err, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).send('Something broke!');
+// });
 
 app.get("/", (req, res) => {
     res.status(200).send("Welcome to my simple Node.js app!");
