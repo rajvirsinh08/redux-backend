@@ -55,7 +55,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const userRoute = require("./Routes/userRoutes");
-
+const bodyParser = require('body-parser')
 dotenv.config();
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
