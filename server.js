@@ -112,14 +112,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const userRoute = require("./Routes/userRoutes");
 const bodyParser = require('body-parser');
+const userRoute = require("./Routes/userRoutes");
 
 dotenv.config();
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+
 app.use(cors({
     origin: "*",
     methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
@@ -130,10 +131,10 @@ app.use(cors({
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
 
-// Register the user routes
-app.use('/user', userRoute);
+// Register user routes with a base path
+app.use('/api/users', userRoute);
 
-// Root route to handle GET requests to the root URL
+// Default route for root URL
 app.get("/", (req, res) => {
     res.status(200).send("Welcome to my simple Node.js app!");
 });
@@ -154,6 +155,11 @@ mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: t
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');
+});
+
+// 404 handler
+app.use((req, res, next) => {
+    res.status(404).send('Route not found');
 });
 
 module.exports = app;
