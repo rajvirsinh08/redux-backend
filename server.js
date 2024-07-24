@@ -120,18 +120,26 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: "*",
+    methods: ["POST", "GET", "DELETE", "PUT", "PATCH"],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+}));
 
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    next();
-});
-
+// Serve static files from the 'uploads' directory
 app.use('/uploads', express.static('uploads'));
+
+// Register the user routes
 app.use('/user', userRoute);
 
-mongoose.connect(process.env.URI)
+// Root route to handle GET requests to the root URL
+app.get("/", (req, res) => {
+    res.status(200).send("Welcome to my simple Node.js app!");
+});
+
+// MongoDB connection
+mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log("Connected to MongoDB");
         app.listen(process.env.PORT || 8000, () => {
@@ -141,11 +149,6 @@ mongoose.connect(process.env.URI)
     .catch(error => {
         console.error("Error connecting to MongoDB:", error);
     });
-
-// Root route to handle GET requests to the root URL
-app.get("/", (req, res) => {
-    res.status(200).send("Welcome to my simple Node.js app!");
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
