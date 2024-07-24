@@ -58,7 +58,7 @@ const userRoute = require("./Routes/userRoutes");
 
 dotenv.config();
 const app = express();
-
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors(), function (req, res, next) {
     console.log(req);
@@ -74,14 +74,14 @@ app.use(cors(), function (req, res, next) {
 });
 app.use('/uploads', express.static('uploads'));
 app.use(userRoute);
+app.use('/user', userRoute);
 
 let isConnected = false;
 
-mongoose.connect(process.env.URI)
+mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log("Connected to MongoDB");
         isConnected = true;
-        
         app.listen(process.env.PORT || 8000, () => {
             console.log(`Server running on port ${process.env.PORT || 8000}`);
         });
