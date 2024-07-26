@@ -1,14 +1,14 @@
 const express = require('express');
-const   router = express.Router();
+const router = express.Router();
 const multer = require('multer');
 const User = require("../models/userModel");
-const dotenv = require("dotenv");
+// const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 const { StatusCodes, MESSAGES } = require('../constants');
 const authenticateToken = require('../Middleware/authantication');
 
-dotenv.config();
+// dotenv.config();
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
