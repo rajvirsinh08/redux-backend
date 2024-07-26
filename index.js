@@ -21,11 +21,13 @@ app.use(cors({
 
 app.use('/uploads', express.static('uploads'));
 
-app.use('/api/users', userRoute);
+
 
 app.get("/", (req, res) => {
     res.status(200).send("Welcome to my simple Node.js app!");
 });
+
+app.use('/api/users', userRoute);
 
 mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
