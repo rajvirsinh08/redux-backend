@@ -10,24 +10,24 @@ const authenticateToken = require('../Middleware/authantication');
 
 // dotenv.config();
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/'); // Specify the destination directory
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname); // Specify the file name
-    }
-});
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'uploads/'); // Specify the destination directory
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, Date.now() + '-' + file.originalname); // Specify the file name
+//     }
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 // POST route to create a new user
-router.post('/nm', upload.single('image'), async (req, res) => {
+router.post('/nm', async (req, res) => {
     console.log('req.body:', req.body);
     console.log('req.file:', req.file);
 
     const { name, email, password } = req.body;
-    const image = req.file ? req.file.originalname : null;
+    // const image = req.file ? req.file.originalname : null;
 
     try {
         const existingUser = await User.findOne({ email: email });
@@ -39,7 +39,7 @@ router.post('/nm', upload.single('image'), async (req, res) => {
             name: name,
             email: email,
             password: password,
-            image: req.file ? `http://localhost:${process.env.PORT}/uploads/${req.file.filename}` : null,
+            // image: req.file ? `http://localhost:${process.env.PORT}/uploads/${req.file.filename}` : null,
         });
 
         res.status(StatusCodes.CREATED).json({ userAdded });
@@ -59,7 +59,7 @@ router.post('/signin', async (req, res) => {
             const jwtToken = jwt.sign(
                 { userId: user._id },
                 process.env.JWT_SECRET_KEY,
-                { expiresIn: "1m" }
+                { expiresIn: "1h" }
             );
             console.log('Generated JWT Token:', jwtToken);
             res.status(StatusCodes.OK).json({ user, jwtToken });
@@ -73,6 +73,29 @@ router.post('/signin', async (req, res) => {
 });
 
 // router.use(authenticateToken);
+// Search route to find users by name or email
+router.get('/search', async (req, res) => {
+    const { query } = req.query;
+
+    try {
+        if (!query) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: "Search query is required" });
+        }
+
+        // Search for users whose name or email contains the query string (case-insensitive)
+        const searchResults = await User.find({
+            $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { email: { $regex: query, $options: 'i' } }
+            ]
+        });
+
+        res.status(StatusCodes.OK).json(searchResults);
+    } catch (error) {
+        console.error("Error searching users:", error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+});
 
 // GET route to get all users
 router.get("/get", async (req, res) => {
@@ -84,6 +107,7 @@ router.get("/get", async (req, res) => {
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 });
+
 
 // GET route to get a single user by ID
 router.get("/get/:id", async (req, res) => {
@@ -116,7 +140,7 @@ router.delete("/delete/:id", async (req, res) => {
 });
 
 // PATCH route to update a user by ID, including handling image updates
-router.patch("/update/:id", upload.single('image'), async (req, res) => {
+router.patch("/update/:id", async (req, res) => {
     console.log('req.body:', req.body);
     console.log('req.file:', req.file);
 
