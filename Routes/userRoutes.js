@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+// const multer = require('multer');
 const User = require("../models/userModel");
-// const dotenv = require("dotenv");
+const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcryptjs");
 const { StatusCodes, MESSAGES } = require('../constants');
 const authenticateToken = require('../Middleware/authantication');
 
-// dotenv.config();
+dotenv.config();
 
 // const storage = multer.diskStorage({
 //     destination: function (req, file, cb) {
@@ -26,7 +26,7 @@ router.post('/nm', async (req, res) => {
     console.log('req.body:', req.body);
     console.log('req.file:', req.file);
 
-    const { name, email, password } = req.body;
+    const { name, email, password,contact,city } = req.body;
     // const image = req.file ? req.file.originalname : null;
 
     try {
@@ -38,7 +38,10 @@ router.post('/nm', async (req, res) => {
         const userAdded = await User.create({
             name: name,
             email: email,
+            contact: contact,
+            city: city,
             password: password,
+            
             // image: req.file ? `http://localhost:${process.env.PORT}/uploads/${req.file.filename}` : null,
         });
 
@@ -156,10 +159,10 @@ router.patch("/update/:id", async (req, res) => {
             updateData.email = email;
         }
 
-        if (req.file) {
-            const imagePath = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
-            updateData.image = imagePath;
-        }
+        // if (req.file) {
+        //     const imagePath = `http://localhost:${process.env.PORT}/uploads/${req.file.filename}`;
+        //     updateData.image = imagePath;
+        // }
 
         const updatedUser = await User.findByIdAndUpdate(id, updateData, { new: true });
 
