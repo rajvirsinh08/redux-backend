@@ -7,7 +7,8 @@ const jwt = require("jsonwebtoken");
 // const bcrypt = require("bcryptjs");
 const { StatusCodes, MESSAGES } = require("../constants");
 const authenticateToken = require("../Middleware/authantication");
-const { addToBlacklist } = require("../blacklist");
+// const { addToBlacklist } = require("../blacklist");
+const Blacklist = require("../blacklistModel");
 
 dotenv.config();
 
@@ -114,14 +115,23 @@ router.get("/search", async (req, res) => {
       .json({ error: error.message });
   }
 });
-router.post("/logout", authenticateToken, (req, res) => {
-    const token = req.header('Authorization')?.split(' ')[1];
+// router.post("/logout", authenticateToken, (req, res) => {
+//     const token = req.header('Authorization')?.split(' ')[1];
     
-    if (token) {
-      addToBlacklist(token);
-    }
+//     if (token) {
+//       addToBlacklist(token);
+//     }
   
-    res.status(StatusCodes.OK).json({ message: 'Successfully logged out.' });
+//     res.status(StatusCodes.OK).json({ message: 'Successfully logged out.' });
+//   });
+router.post('/logout', authenticateToken, async (req, res) => {
+    const token = req.token;
+    try {
+      await Blacklist.create({ token });
+      res.status(200).json({ message: 'Successfully logged out.' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error logging out.' });
+    }
   });
 // GET route to get all users
 router.get("/get",authenticateToken, async (req, res) => {
