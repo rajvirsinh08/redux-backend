@@ -11,6 +11,9 @@ const userSchema = new mongoose.Schema(
         contact: {
             type: String,
         },
+        dob: {
+            type: String,
+        },
         city: {
             type: String,
         },

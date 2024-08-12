@@ -28,7 +28,7 @@ router.post("/nm", async (req, res) => {
   console.log("req.body:", req.body);
   console.log("req.file:", req.file);
 
-  const { name, email, password, contact, city } = req.body;
+  const { name, email, password, contact, dob, city } = req.body;
   // const image = req.file ? req.file.originalname : null;
 
   try {
@@ -43,6 +43,7 @@ router.post("/nm", async (req, res) => {
       name: name,
       email: email,
       contact: contact,
+      dob: dob,
       city: city,
       password: password,
 
@@ -117,24 +118,24 @@ router.get("/search", async (req, res) => {
 });
 // router.post("/logout", authenticateToken, (req, res) => {
 //     const token = req.header('Authorization')?.split(' ')[1];
-    
+
 //     if (token) {
 //       addToBlacklist(token);
 //     }
-  
+
 //     res.status(StatusCodes.OK).json({ message: 'Successfully logged out.' });
 //   });
-router.post('/logout', authenticateToken, async (req, res) => {
-    const token = req.token;
-    try {
-      await Blacklist.create({ token });
-      res.status(200).json({ message: 'Successfully logged out.' });
-    } catch (error) {
-      res.status(500).json({ message: 'Error logging out.' });
-    }
-  });
+router.post("/logout", authenticateToken, async (req, res) => {
+  const token = req.token;
+  try {
+    await Blacklist.create({ token });
+    res.status(200).json({ message: "Successfully logged out." });
+  } catch (error) {
+    res.status(500).json({ message: "Error logging out." });
+  }
+});
 // GET route to get all users
-router.get("/get",authenticateToken, async (req, res) => {
+router.get("/get", authenticateToken, async (req, res) => {
   try {
     const showAll = await User.find();
     res.status(StatusCodes.OK).json(showAll);
