@@ -33,11 +33,11 @@ router.post("/addtask", authenticateToken, async (req, res) => {
       .json({ error: error.message });
   }
 });
-
-router.get("/alltask", async (req, res) => {
+// Get All Tasks for a User
+router.get("/alltask", authenticateToken, async (req, res) => {
   try {
-    const showAlltask = await Task.find();
-    res.status(StatusCodes.OK).json(showAlltask);
+    const tasks = await Task.find({ user: req.user.userId });
+    res.status(StatusCodes.OK).json(tasks);
   } catch (error) {
     console.error("Error fetching tasks:", error);
     res
@@ -45,10 +45,11 @@ router.get("/alltask", async (req, res) => {
       .json({ error: error.message });
   }
 });
-router.get("/gettask/:id", async (req, res) => {
+
+router.get("/gettask/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   try {
-    const singleTask = await Task.findById(id);
+    const singleTask = await Task.findById({ user: req.user.userId });
     if (!singleTask) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -62,16 +63,18 @@ router.get("/gettask/:id", async (req, res) => {
       .json({ error: error.message });
   }
 });
-router.delete("/deletetask/:id", async (req, res) => {
+
+// Delete Task by ID for a User
+router.delete("/deletetask/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   try {
-    const singleTask = await Task.findByIdAndDelete(id);
-    if (!singleTask) {
+    const task = await Task.findOneAndDelete({ _id: id, user: req.user.userId });
+    if (!task) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: MESSAGES.USER_NOT_FOUND });
+        .json({ message: MESSAGES.TASK_NOT_FOUND });
     }
-    res.status(StatusCodes.OK).json(singleTask);
+    res.status(StatusCodes.OK).json({ message: "Task Deleted Successfully" });
   } catch (error) {
     console.error("Error deleting task:", error);
     res
@@ -79,28 +82,32 @@ router.delete("/deletetask/:id", async (req, res) => {
       .json({ error: error.message });
   }
 });
-router.patch("/updatetask/:id", async (req, res) => {
-  console.log("req.body:", req.body);
 
+// Update Task by ID for a User
+router.patch("/updatetask/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { ...updateData } = req.body;
   try {
-    const updatedTask = await Task.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    const updatedTask = await Task.findOneAndUpdate(
+      { _id: id, user: req.user.userId },
+      updateData,
+      { new: true }
+    );
 
     if (!updatedTask) {
       return res
         .status(StatusCodes.NOT_FOUND)
-        .json({ message: MESSAGES.USER_NOT_FOUND });
+        .json({ message: MESSAGES.TASK_NOT_FOUND });
     }
 
     return res.status(StatusCodes.OK).json(updatedTask);
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error updating task:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: error.message });
   }
 });
+
+
 module.exports = router;
