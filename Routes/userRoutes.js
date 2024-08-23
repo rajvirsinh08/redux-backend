@@ -9,7 +9,6 @@ const { StatusCodes, MESSAGES } = require("../constants");
 const authenticateToken = require("../Middleware/authantication");
 // const { addToBlacklist } = require("../blacklist");
 const Blacklist = require("../blacklistModel");
-
 dotenv.config();
 
 // const storage = multer.diskStorage({

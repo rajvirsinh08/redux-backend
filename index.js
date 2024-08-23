@@ -5,7 +5,7 @@ const cors = require("cors");
 
 const bodyParser = require('body-parser');
 const userRoute = require("./Routes/userRoutes");
-
+const taskRoute=require("./Routes/taskRoutes");
 dotenv.config();
 const app = express();
 app.use(bodyParser.json())
@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use('/api/users', userRoute);
+app.use('/api/task',taskRoute);
 
 mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {

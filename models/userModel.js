@@ -1,29 +1,27 @@
 const mongoose = require("mongoose");
 //create schema
 const userSchema = new mongoose.Schema(
-    {
-        name: {
-            type: String,
-        },
-        email: {
-            type: String,
-        },
-        contact: {
-            type: String,
-        },
-        dob: {
-            type: String,
-        },
-        city: {
-            type: String,
-        },
-        password: {
-            type: String,
-        },
-       
-       
+  {
+    name: {
+      type: String,
     },
-    { timestamps: true }
+    email: {
+      type: String,
+    },
+    contact: {
+      type: String,
+    },
+    dob: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    password: {
+      type: String,
+    },
+  },
+  { timestamps: true }
 );
 
 //create model
