@@ -68,7 +68,10 @@ router.get("/gettask/:id", authenticateToken, async (req, res) => {
 router.delete("/deletetask/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
   try {
-    const task = await Task.findOneAndDelete({ _id: id, user: req.user.userId });
+    const task = await Task.findOneAndDelete({
+      _id: id,
+      user: req.user.userId,
+    });
     if (!task) {
       return res
         .status(StatusCodes.NOT_FOUND)
@@ -108,6 +111,5 @@ router.patch("/updatetask/:id", authenticateToken, async (req, res) => {
       .json({ error: error.message });
   }
 });
-
 
 module.exports = router;
