@@ -8,45 +8,6 @@ const dotenv = require("dotenv");
 const { StatusCodes, MESSAGES } = require("../constants");
 const authenticateToken = require("../Middleware/authantication");
 dotenv.config();
-const Razorpay = require("razorpay");
-const crypto = require("crypto");
-
-router.post("/verify-payment", authenticateToken, async (req, res) => {
-  const { paymentId, orderId, signature } = req.body;
-  const generated_signature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-    .update(orderId + "|" + paymentId)
-    .digest("hex");
-
-  if (generated_signature === signature) {
-    // Update user's subscription status in the database
-    await User.findByIdAndUpdate(req.user.userId, { isSubscribed: true });
-    res.status(200).json({ message: "Payment verified successfully" });
-  } else {
-    res.status(400).json({ message: "Invalid payment signature" });
-  }
-});
-
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
-router.post("/create-order", authenticateToken, async (req, res) => {
-  const { amount } = req.body;
-
-  try {
-    const order = await razorpay.orders.create({
-      amount: amount,
-      currency: "INR",
-      receipt: "receipt#1",
-    });
-
-    res.status(201).json(order);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating Razorpay order", error });
-  }
-});
 
 // add task
 router.post("/addtask", authenticateToken, async (req, res) => {
@@ -54,15 +15,8 @@ router.post("/addtask", authenticateToken, async (req, res) => {
 
   const { name, describe } = req.body;
   const user = await User.findById(req.user.userId);
-    const taskCount = await Task.countDocuments({ user: req.user.userId });
 
   try {
-    if (!user.isSubscribed && taskCount >= 5) {
-      return res.status(StatusCodes.FORBIDDEN).json({
-        message: "Subscription required to add more than 5 tasks",
-      });
-    }
-
     const taskAdded = await Task.create({
       name: name,
       describe: describe,
