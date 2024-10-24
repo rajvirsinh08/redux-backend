@@ -1,11 +1,10 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const cors = require("cors");
-
-const bodyParser = require('body-parser');
-const userRoute = require("./Routes/userRoutes");
-const taskRoute=require("./Routes/taskRoutes");
+import express,{ Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
+import bodyParser from'body-parser';
+import userRoute from"Controllers/userController";
+import taskRoute from "src/Routes/taskRoutes";
 dotenv.config();
 const app = express();
 app.use(bodyParser.json())
@@ -30,7 +29,9 @@ app.get("/", (req, res) => {
 app.use('/api/users', userRoute);
 app.use('/api/task',taskRoute);
 
-mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: true })
+
+// mongoose.connect(process.env.URI as string, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.URI as string)
     .then(() => {
         console.log("Connected to MongoDB");
         app.listen(process.env.PORT || 8000, () => {
@@ -42,7 +43,7 @@ mongoose.connect(process.env.URI, { useNewUrlParser: true, useUnifiedTopology: t
     });
 
 // Error handling middleware
-app.use((err, req, res, next) => {
+app.use((err:Error, req:Request, res:Response, next:NextFunction) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');
 });
