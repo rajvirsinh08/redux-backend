@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
-import Task from "src/Models/taskModel";
+import Task from "../Models/taskModel";
 import { StatusCodes, MESSAGES } from "../../constants";
 
+// Interface for authenticated user request
 export interface IUserAuthRequest extends Request {
   user?: {
     userID: string;
   };
 }
 
+// Add a new task
 export const addTask = async (req: IUserAuthRequest, res: Response) => {
   const { name, describe } = req.body;
 
@@ -30,7 +32,7 @@ export const addTask = async (req: IUserAuthRequest, res: Response) => {
     });
   }
 };
-
+// Get all tasks for a user
 export const getAllTasks = async (req: IUserAuthRequest, res: Response) => {
   try {
     const tasks = await Task.find({ user: req.user?.userID });
@@ -44,6 +46,8 @@ export const getAllTasks = async (req: IUserAuthRequest, res: Response) => {
     });
   }
 };
+
+// Delete a task
 export const deleteTask = async (req: IUserAuthRequest, res: Response) => {
   const { id } = req.params;
   try {
@@ -88,6 +92,8 @@ export const deleteTask = async (req: IUserAuthRequest, res: Response) => {
 //     });
 //   }
 // };
+
+// Update a task
 export const updateTask = async (req: IUserAuthRequest, res: Response) => {
   const { id } = req.params;
   const { ...updateData } = req.body;

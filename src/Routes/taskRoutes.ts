@@ -1,6 +1,11 @@
 import express, { Router } from "express";
-import { addTask, getAllTasks, deleteTask, updateTask } from "../Controllers/taskController";
-import  authenticateToken  from "src/Middleware/authantication";
+import {
+  addTask,
+  getAllTasks,
+  deleteTask,
+  updateTask,
+} from "../Controllers/taskController";
+import authenticateToken from "../Middleware/authantication";
 
 const router: Router = express.Router();
 

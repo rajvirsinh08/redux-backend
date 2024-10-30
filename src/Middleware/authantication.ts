@@ -1,6 +1,7 @@
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
+// Interface for custom request to include user information
 export interface CustomRequest extends Request {
   user?: {
     _id: string;
@@ -9,7 +10,12 @@ export interface CustomRequest extends Request {
   };
 }
 
-const authenticateToken = (req: CustomRequest | any, res: Response, next: NextFunction): void => {
+// Middleware to authenticate token
+const authenticateToken = (
+  req: CustomRequest | any,
+  res: Response,
+  next: NextFunction
+): void => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -18,18 +24,21 @@ const authenticateToken = (req: CustomRequest | any, res: Response, next: NextFu
     return; // Stop execution and return to avoid calling next()
   }
 
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string, (err: jwt.VerifyErrors | null, user: any) => {
-    if (err) {
-      res.status(403).json({ message: "Forbidden: Invalid token" });
-      return; // Stop execution and return to avoid calling next()
+  jwt.verify(
+    token,
+    process.env.ACCESS_TOKEN_SECRET as string,
+    (err: jwt.VerifyErrors | null, user: any) => {
+      if (err) {
+        res.status(403).json({ message: "Forbidden: Invalid token" });
+        return; // Stop execution and return to avoid calling next()
+      }
+      req.user = user;
+      next(); // Continue to the next middleware or route handler
     }
-    req.user = user;
-    next(); // Continue to the next middleware or route handler
-  });
+  );
 };
 
 export default authenticateToken;
-
 
 // import { Response, NextFunction } from "express";
 // // Libraries
@@ -74,4 +83,3 @@ export default authenticateToken;
 // };
 // // export { authenticateToken };
 // export default authenticateToken;
-

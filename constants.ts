@@ -1,3 +1,4 @@
+// src/constants.ts
 
 export const StatusCodes = {
   OK: 200,

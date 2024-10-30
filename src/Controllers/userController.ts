@@ -19,12 +19,15 @@ interface UserRequestBody {
 export const createUser = async (req: Request, res: Response) => {
   console.log("req.body:", req.body);
 
-  const { name, email, password, contact, dob, city } = req.body as UserRequestBody;
+  const { name, email, password, contact, dob, city } =
+    req.body as UserRequestBody;
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: MESSAGES.EMAIL_ALREADY_IN_USE });
       return;
     }
 
@@ -40,7 +43,9 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(StatusCodes.CREATED).json({ userAdded });
   } catch (error: any) {
     console.error("Error creating user:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
   }
 };
 
@@ -60,11 +65,15 @@ export const signInUser = async (req: Request, res: Response) => {
       console.log("Generated JWT Token:", jwtToken);
       res.status(StatusCodes.OK).json({ user, jwtToken });
     } else {
-      res.status(StatusCodes.BAD_REQUEST).json({ message: MESSAGES.INVALID_CREDENTIALS });
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: MESSAGES.INVALID_CREDENTIALS });
     }
   } catch (error: any) {
     console.error("Error signing in user:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
   }
 };
 
@@ -77,7 +86,9 @@ export const logoutUser = async (req: Request, res: Response) => {
     }
     res.status(StatusCodes.OK).json({ message: "Successfully logged out." });
   } catch (error: any) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Error logging out." });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Error logging out." });
   }
 };
 
@@ -88,7 +99,9 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.status(StatusCodes.OK).json(showAll);
   } catch (error: any) {
     console.error("Error fetching users:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
   }
 };
 
@@ -98,13 +111,17 @@ export const getUserById = async (req: Request, res: Response) => {
   try {
     const singleUser = await User.findById(id);
     if (!singleUser) {
-      res.status(StatusCodes.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: MESSAGES.USER_NOT_FOUND });
       return;
     }
     res.status(StatusCodes.OK).json(singleUser);
   } catch (error: any) {
     console.error("Error fetching user:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
   }
 };
 
@@ -114,13 +131,17 @@ export const deleteUserById = async (req: Request, res: Response) => {
   try {
     const singleUser = await User.findByIdAndDelete(id);
     if (!singleUser) {
-      res.status(StatusCodes.NOT_FOUND).json({ message: MESSAGES.USER_NOT_FOUND });
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: MESSAGES.USER_NOT_FOUND });
       return;
     }
     res.status(StatusCodes.OK).json(singleUser);
   } catch (error: any) {
     console.error("Error deleting user:", error);
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
   }
 };
 
@@ -150,7 +171,6 @@ export const deleteUserById = async (req: Request, res: Response) => {
 //     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
 //   }
 // };
-
 
 // import express, { Request, Response } from "express";
 // import jwt from "jsonwebtoken";
